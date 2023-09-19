@@ -15,14 +15,31 @@ for (const panier in compo_paniers) {
   compo_paniers[panier] = compo;
 }
 
-// ajoute la composition des paniers dans le fichier formulaire_paniers_out.html à la place des `{{panierXX}}`
+// génère la composition des paniers dans le fichier `formulaire_paniers_out.html`
+// en ajoutant les compos à la place des `{{panierXX}}` dans le template
 formulaire = fs.readFileSync("formulaire_paniers.html", {
   encoding: "utf8",
 });
 
 for (const panier in compo_paniers) {
-  formulaire = formulaire.replace("{{" + panier + "}}", compo_paniers[panier].join(", "));
+  formulaire = formulaire.replace(
+    "{{" + panier + "}}",
+    compo_paniers[panier].join(", ")
+  );
 }
-
-// console.log(formulaire);
 fs.writeFileSync("formulaire_paniers_out.html", formulaire);
+
+// génère la composition paniers pour l'email dans `email_paniers_out.html`
+email = fs.readFileSync("email_paniers.html", {
+  encoding: "utf8",
+});
+
+for (const panier in compo_paniers) {
+  email = email.replace(
+    "{{" + panier + "}}",
+    "<li>" +
+      compo_paniers[panier].join("</li>\n                          <li>") +
+      "</li>"
+  );
+}
+fs.writeFileSync("email_paniers_out.html", email);
