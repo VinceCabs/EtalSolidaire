@@ -37,9 +37,7 @@ email = fs.readFileSync("email_paniers.html", {
 for (const panier in compo_paniers) {
   email = email.replace(
     "{{" + panier + "}}",
-    "<li>" +
-      compo_paniers[panier].join("</li>\n                          <li>") +
-      "</li>"
+    compo_paniers[panier].join("</li>\n                          <li>")
   );
 }
 fs.writeFileSync("email_paniers_out.html", email);
