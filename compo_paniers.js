@@ -10,16 +10,11 @@ let compo_paniers = {
 
 // recupere les compositions pour chaque panier dans les fichiers. exemple : `panier10.txt`
 for (const panier in compo_paniers) {
-  fs.readFile(panier + ".txt", "utf8", (err, compo) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    // ajoute la composition du panier en retirant les lignes vides
-    compo = compo.split(/\r?\n|\r|\n/g).filter((x) => x);
-    compo_paniers[panier] = compo;
+  compo = fs.readFileSync(panier + ".txt", { encoding: "utf8", flag: "r" });
 
-    // console.log(compo_paniers);
-  });
+  // ajoute la composition du panier en retirant les lignes vides
+  compo = compo.split(/\r?\n|\r|\n/g).filter((x) => x);
+  compo_paniers[panier] = compo;
 }
+
 console.log(compo_paniers);
