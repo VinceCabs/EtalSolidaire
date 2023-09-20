@@ -1,5 +1,6 @@
 const fs = require("fs");
 
+VENTE_DATE_SHORT = "20230924";
 VENTE_DATE = "dimanche 24 septembre";
 VENTE_LIEU = "à la maison de quartier XXX";
 
@@ -24,6 +25,7 @@ formulaire = fs.readFileSync("formulaire_paniers.html", {
   encoding: "utf8",
 });
 formulaire = formulaire
+  .replace("{{vente_date_short}}", VENTE_DATE_SHORT)
   .replace("{{vente_date}}", VENTE_DATE)
   .replace("{{vente_lieu}}", VENTE_LIEU);
 formulaire = renderCompoPaniers(formulaire, compo_paniers);
@@ -49,7 +51,7 @@ fs.writeFileSync("email_paniers_out.html", email);
  * @returns {string} le rendu
  */
 function renderCompoPaniers(template, compo_paniers, separator = ", ") {
-  html = template
+  html = template;
   for (const panier in compo_paniers) {
     html = html.replace(
       "{{" + panier + "}}",
