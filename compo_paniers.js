@@ -1,5 +1,8 @@
 const fs = require("fs");
 
+VENTE_DATE = "dimanche 24 septembre";
+VENTE_LIEU = "à la maison de quartier XXX";
+
 let compo_paniers = {
   panier10: [],
   panier20: [],
@@ -20,7 +23,9 @@ for (const panier in compo_paniers) {
 formulaire = fs.readFileSync("formulaire_paniers.html", {
   encoding: "utf8",
 });
-
+formulaire = formulaire
+  .replace("{{vente_date}}", VENTE_DATE)
+  .replace("{{vente_lieu}}", VENTE_LIEU);
 for (const panier in compo_paniers) {
   formulaire = formulaire.replace(
     "{{" + panier + "}}",
