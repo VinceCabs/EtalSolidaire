@@ -1,1 +1,6 @@
+# Exclusion des HTML rendus
 *_out.html
+
+# Perso Vincent
+test.js
+.wip/
