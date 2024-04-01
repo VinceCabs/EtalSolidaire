@@ -26,9 +26,7 @@ function renderFormulaire(template, param_values) {
     // console.log(param + ": " + value + "| type: " + typeof (value))
     formulaire = formulaire.replace("{{" + param + "}}", value);
     if (value == "oui") {
-      
       formulaire = _insertBloc(formulaire, param, true)
-
     } else {
       formulaire = _insertBloc(formulaire, param, false)
     }
@@ -145,81 +143,139 @@ function getRawText() {
 }
 
 function main() {
+  allTests()
+}
+
+
+// ========================== TESTS ==========================
+
+function allTests() {
+  testInsertBloc()
+  testRenderFormulaire()
+  testRenderPaniers()
+}
+
+function testInsertBloc() {
+
   let template = `
+  ici un panier
+  {{#biere}}là un pack de bière{{/biere}}
+  {{#biere}}Total bière{{/biere}}`
+  let param = ""
+  let result = ""
+
+  // test 1 : on insert un bloc qui n'existe pas
+  param = "pouet"
+  result = _insertBloc(template, param, true)
+  expect = `
+  ici un panier
+  {{#biere}}là un pack de bière{{/biere}}
+  {{#biere}}Total bière{{/biere}}`
+  console.log(result == expect)
+
+  // test 2 : on insert un bloc qui existe et on remplace un lieu de vente
+  param = "biere"
+  result = _insertBloc(template, param, true)
+  expect = `
+  ici un panier
+  là un pack de bière
+  Total bière`
+  console.log(result == expect)
+
+  // test 3 : on insert un bloc qui existe et on remplace un lieu de vente
+  result = _insertBloc(template, param, false)
+  expect = `
+  ici un panier
+  
+  `
+  console.log(result == expect)
+}
+
+function testRenderFormulaire() {
+
+  // test 1 : remplacer une date et un panier
+  template = `
   {{date}}
-  {{panier10}}  
-  {{#biere}}là un pack de bière{{/biere}}`
-  let param_range = "'0. param. de la vente'!A1:C14"
-  let param_values = SpreadsheetApp.getActiveSpreadsheet().getRange(param_range).getValues()
-  console.log(renderFormulaire(template,param_values ));
-  //
-  // samedi 30 septembre
-  // 1 salade, 1 poireau, 1 pomme
-  // là un pack de bière
+  {{panier10}}`
+  // valeurs récupérées depuis GSheet
+  param_values = [
+    ["Paramètre", "Description", "Valeur"],
+    [
+      "date",
+      "",
+      "Sun Apr 07 2024 00:00:00 GMT+0200 (Central European Summer Time)",
+    ],
+    ["panier10", "", "1 salade, 1 poireau, 1 pomme"]
+  ];
+  expect = `
+  dimanche 7 avril
+  1 salade, 1 poireau, 1 pomme`
+  result = renderFormulaire(template,param_values );
+  console.log(result == expect)
 
-  let panier10 = `
-  1 salade
-  1 poireau
-  1 pomme`
-  console.log(_renderPaniers(panier10))
-  // 1 salade,   1 poireau,   1 pomme
 
+  // test 2 : insérer un bloc
   template = `
   ici un panier
   {{#biere}}là un pack de bière{{/biere}}
-  {{#biere}}Total biere{{/biere}}`
-  param = "pouet"
-  console.log(_insertBloc(template, param, true))
-  // ici un panier
-  // {{#biere}}là un pack de bière{{/biere}}
-  // {{#biere}}Total bière{{/biere}}
+  {{#biere}}Total bière{{/biere}}`
+  param_values = [
+    ["Paramètre", "Description", "Valeur"],
+    [
+      "biere",
+      "",
+      "oui",
+    ]
+  ];
+  result = renderFormulaire(template,param_values );
+  expect = `
+  ici un panier
+  là un pack de bière
+  Total bière`
+  console.log(result == expect)
 
-  param = "biere"
-  console.log(_insertBloc(template, param, true))
-  // ici un panier
-  // là un pack de bière
-  // Total bière
+  // test 3 : insérer un bloc et remplacer un paramètre
+  template = `
+  {{#pt_vente_x1}}
+  <div hidden>
+      <label>[select Pdv "{{lieu_court}}"]</label>
+  </div>
+  {{/pt_vente_x1}}`
+  param_values = [
 
-  param = "biere"
-  console.log(_insertBloc(template, param, false))
-  // ici un panier
+    ["Paramètre", "Description", "Valeur"],
+    [
+      "lieu_court",
+      "",
+      "ici"
+    ],
+    [
+      "pt_vente_x1",
+      "",
+      "oui",
+    ],
 
+  ];
+  expect = `
+  
+  <div hidden>
+      <label>[select Pdv "ici"]</label>
+  </div>
+  `
+  result = renderFormulaire(template,param_values );
+  console.log(result == expect)
 }
 
-// function unit_tests() {
-//   let param_values= [ [ 'Paramètre', 'Description', 'Valeur' ],
-//   [ 'date',
-//     'date de la vente',
-//     'Sun Apr 07 2024 00:00:00 GMT+0200 (Central European Summer Time)' ],
-//   [ 'heure',
-//     'heure de récup. des paniers',
-//     'entre 10h00 et 11h30' ],
-//   [ 'lieu_court', 'pt de vente principal', 'PMC' ],
-//   [ 'pt_vente_x2', '2 points de vente oui/non', 'oui' ],
-//   [ 'lieu_court_2',
-//     'deuxième pt de vente (si applicable)',
-//     'Vérollot' ],
-//   [ 'biere', '', 'non' ],
-//   [ 'corentin_colette', 'présence de Corentin et Colette', 'non' ],
-//   [ 'panier10',
-//     '',
-//     '500 g de carottes\r\n1 kg de PDT Monalisa\r\n500 g d\'oignons jaunes\r\n350 g d\'épinards\r\n4 pommes Story\r\n6 oeufs' ],
-//   [ 'panier20',
-//     '',
-//     '1 kg de carottes\r\n1 kg de PDT Monalisa\r\n500 g d\'oignons rouges\r\n200 g de champignons\r\n500 g d\'épinards\r\n350 g de poireaux\r\n1 kg de pommes Story\r\n10 oeufs' ],
-//   [ 'panier25',
-//     '',
-//     '1 kg de carottes\n1 kg de PDT Monalisa\n500 g d\'oignons jaunes\n200 g de champignons\n400 g de blettes\n500 g de poireaux\n1 botte d\'asperges blanches\n1 kg de pommes Story\n10 oeufs' ],
-//   [ 'AUTO', '', '' ],
-//   [ 'date_courte', '', '20240407' ],
-//   [ 'pt_vente_x1', '2 points de vente oui/non', 'non' ] ]
-//   let template = `
-//   {{date}}
-//   {{panier10}}  
-//   {{#biere}}là un pack de bière{{/biere}}`
-//   // console.log(renderFormulaire(template,param_values ));
-//   assert.equal(renderFormulaire(template,param_values ),`
-//   dimanche 7 avril
-//   500 g de carottes, 1 kg de PDT Monalisa, 500 g d'oignons jaunes, 350 g d'épinards, 4 pommes Story, 6 oeufs  
-//   `)
-// }
+function testRenderPaniers() {
+  let panier10 = `
+1 salade
+1 poireau
+1 pomme
+`
+  // test 1 : un panier sur une ligne
+  result = _renderPaniers(panier10)
+  expect = "1 salade, 1 poireau, 1 pomme"
+  console.log(result == expect)
+}
+
+main()
