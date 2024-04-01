@@ -12,29 +12,16 @@ Ensuite : `git clone https://github.com/VinceCabs/EtalSolidaire.git`
 
 ## Usage
 
-1. Compléter les infos de la vente dans les fichiers :
-   
-   - date et lieux, dans le fichier `compo_panier.js` :
-    ```js
-    // Paramètres pour la vente
-    VENTE_DATE_SHORT = "20230924";
-    VENTE_DATE = "dimanche 24 septembre";
-    VENTE_LIEU = "à la maison de quartier XXX";
-    ```
-    - composition des paniers dans les fichiers (exemple `panier10.txt`) :
-    ```
-    500 g de carottes
-    1 kg de PDT Alouette
-    ...
-    ```
+Au prélable, vérifiez que vous avez bien accès au fichier Gsheet [Etal Solidaire](https://docs.google.com/spreadsheets/d/1HdZfl5ic_SwQ_Cb_FeYsoNWnQkPTY-rbNtf52KwXfXs/edit#gid=56528812) (demander l'accès si besoin)
 
-2. Pour générer le HTML de l'email et du formulaire :
-
-    - `node compo_paniers.js`
-
-3. vous retrouverez le HTML généré dans les fichiers
-   - `email_paniers_out.html` => à copier coller dans MailChimp
-   - `fomulaire_paniers_out.html` => à copier coller intégralement dans Wordpress
+1. Préparer la vente :
+   - Compléter tous les paramètres de la vente
+   - Préparer le formulaire de commande via l'onglet [1. vente (Wordpress)](https://docs.google.com/spreadsheets/d/1HdZfl5ic_SwQ_Cb_FeYsoNWnQkPTY-rbNtf52KwXfXs/edit#gid=56528812)
+   - Préparer l'email via l'onglet [1. vente (Mailchimp)](https://docs.google.com/spreadsheets/d/1HdZfl5ic_SwQ_Cb_FeYsoNWnQkPTY-rbNtf52KwXfXs/edit#gid=56528812)
+2. Fermeture de la vente (mardi midi)
+   - *à compléter*
+3. Envoi des email de convocation (entre mardi et jeudi)
+   - *à compléter*
 
 ## L'Étal Solidaire
 
