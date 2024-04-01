@@ -26,9 +26,9 @@ function renderFormulaire(template, param_values) {
     // console.log(param + ": " + value + "| type: " + typeof (value))
     formulaire = formulaire.replace("{{" + param + "}}", value);
     if (value == "oui") {
-      formulaire = _insertBloc(formulaire, param, true)
+      formulaire = _insertBloc(formulaire, param, true);
     } else {
-      formulaire = _insertBloc(formulaire, param, false)
+      formulaire = _insertBloc(formulaire, param, false);
     }
   }
   return formulaire;
@@ -58,10 +58,9 @@ function renderEmail(template, param_values) {
   return email;
 }
 
-
 /**
  * Extrait les paramètres de la vente
- * 
+ *
  * @param {Object} range_values tableau avec les paramètres, incluant les headers
  */
 function _extractParams(range_values) {
@@ -101,13 +100,13 @@ function _renderPaniers(panier, separator = ", ") {
 /**
  * Insert ou retire un bloc de texte compris entre des balises {{#block_name}} et {{/block_name}} dans le template.
  * Laisse les autres blocs de texte
- * 
+ *
  * exemple :
  * template = "ici du texte. {{#foo}}là un bloc de texte à insérer{{/foo}}"
  * block_name = "foo"
  * console.log(_insertBloc(template, param_name, true))
  * // ici du texte. là un bloc un bloc de texte à insérer
- * 
+ *
  * @param {string} template template du texte
  * @param {string} block_name nom du bloc recherché dans le template
  * @param {boolean} insert condition: on insert si `true`, on retire le bloc sinon
@@ -126,77 +125,79 @@ function _insertBloc(template, block_name, insert) {
     }
     // le bloc existe et on insert le bloc
     if (insert) {
-      template = template.slice(0,startIdx) + template.slice(startIdx + start.length, endIdx) + template.slice(endIdx + end.length, template.length);
+      template =
+        template.slice(0, startIdx) +
+        template.slice(startIdx + start.length, endIdx) +
+        template.slice(endIdx + end.length, template.length);
     } else {
-    // le bloc existe et on retire le bloc
-      template = template.slice(0,startIdx) + template.slice(endIdx + end.length, template.length);
+      // le bloc existe et on retire le bloc
+      template =
+        template.slice(0, startIdx) +
+        template.slice(endIdx + end.length, template.length);
     }
   }
-  return template
+  return template;
 }
 
 function getRawText() {
-  let txt = SpreadsheetApp.getActiveSpreadsheet().getCurrentCell().getValue()
-  let ui = SpreadsheetApp.getUi()
+  let txt = SpreadsheetApp.getActiveSpreadsheet().getCurrentCell().getValue();
+  let ui = SpreadsheetApp.getUi();
   let result = ui.alert(txt, ui.ButtonSet.OK);
-  console.log("pouet")
+  console.log("pouet");
 }
 
 function main() {
-  allTests()
+  allTests();
 }
-
 
 // ========================== TESTS ==========================
 
 function allTests() {
-  testInsertBloc()
-  testRenderFormulaire()
-  testRenderPaniers()
+  testInsertBloc();
+  testRenderFormulaire();
+  testRenderPaniers();
 }
 
 function testInsertBloc() {
-
   let template = `
   ici un panier
   {{#biere}}là un pack de bière{{/biere}}
-  {{#biere}}Total bière{{/biere}}`
-  let param = ""
-  let result = ""
+  {{#biere}}Total bière{{/biere}}`;
+  let param = "";
+  let result = "";
 
   // test 1 : on insert un bloc qui n'existe pas
-  param = "pouet"
-  result = _insertBloc(template, param, true)
+  param = "pouet";
+  result = _insertBloc(template, param, true);
   expect = `
   ici un panier
   {{#biere}}là un pack de bière{{/biere}}
-  {{#biere}}Total bière{{/biere}}`
-  console.log(result == expect)
+  {{#biere}}Total bière{{/biere}}`;
+  console.log(result == expect);
 
   // test 2 : on insert un bloc qui existe et on remplace un lieu de vente
-  param = "biere"
-  result = _insertBloc(template, param, true)
+  param = "biere";
+  result = _insertBloc(template, param, true);
   expect = `
   ici un panier
   là un pack de bière
-  Total bière`
-  console.log(result == expect)
+  Total bière`;
+  console.log(result == expect);
 
   // test 3 : on insert un bloc qui existe et on remplace un lieu de vente
-  result = _insertBloc(template, param, false)
+  result = _insertBloc(template, param, false);
   expect = `
   ici un panier
   
-  `
-  console.log(result == expect)
+  `;
+  console.log(result == expect);
 }
 
 function testRenderFormulaire() {
-
   // test 1 : remplacer une date et un panier
   template = `
   {{date}}
-  {{panier10}}`
+  {{panier10}}`;
   // valeurs récupérées depuis GSheet
   param_values = [
     ["Paramètre", "Description", "Valeur"],
@@ -205,34 +206,29 @@ function testRenderFormulaire() {
       "",
       "Sun Apr 07 2024 00:00:00 GMT+0200 (Central European Summer Time)",
     ],
-    ["panier10", "", "1 salade, 1 poireau, 1 pomme"]
+    ["panier10", "", "1 salade, 1 poireau, 1 pomme"],
   ];
   expect = `
   dimanche 7 avril
-  1 salade, 1 poireau, 1 pomme`
-  result = renderFormulaire(template,param_values );
-  console.log(result == expect)
-
+  1 salade, 1 poireau, 1 pomme`;
+  result = renderFormulaire(template, param_values);
+  console.log(result == expect);
 
   // test 2 : insérer un bloc
   template = `
   ici un panier
   {{#biere}}là un pack de bière{{/biere}}
-  {{#biere}}Total bière{{/biere}}`
+  {{#biere}}Total bière{{/biere}}`;
   param_values = [
     ["Paramètre", "Description", "Valeur"],
-    [
-      "biere",
-      "",
-      "oui",
-    ]
+    ["biere", "", "oui"],
   ];
-  result = renderFormulaire(template,param_values );
+  result = renderFormulaire(template, param_values);
   expect = `
   ici un panier
   là un pack de bière
-  Total bière`
-  console.log(result == expect)
+  Total bière`;
+  console.log(result == expect);
 
   // test 3 : insérer un bloc et remplacer un paramètre
   template = `
@@ -240,30 +236,20 @@ function testRenderFormulaire() {
   <div hidden>
       <label>[select Pdv "{{lieu_court}}"]</label>
   </div>
-  {{/pt_vente_x1}}`
+  {{/pt_vente_x1}}`;
   param_values = [
-
     ["Paramètre", "Description", "Valeur"],
-    [
-      "lieu_court",
-      "",
-      "ici"
-    ],
-    [
-      "pt_vente_x1",
-      "",
-      "oui",
-    ],
-
+    ["lieu_court", "", "ici"],
+    ["pt_vente_x1", "", "oui"],
   ];
   expect = `
   
   <div hidden>
       <label>[select Pdv "ici"]</label>
   </div>
-  `
-  result = renderFormulaire(template,param_values );
-  console.log(result == expect)
+  `;
+  result = renderFormulaire(template, param_values);
+  console.log(result == expect);
 }
 
 function testRenderPaniers() {
@@ -271,11 +257,11 @@ function testRenderPaniers() {
 1 salade
 1 poireau
 1 pomme
-`
+`;
   // test 1 : un panier sur une ligne
-  result = _renderPaniers(panier10)
-  expect = "1 salade, 1 poireau, 1 pomme"
-  console.log(result == expect)
+  result = _renderPaniers(panier10);
+  expect = "1 salade, 1 poireau, 1 pomme";
+  console.log(result == expect);
 }
 
-main()
+main();
