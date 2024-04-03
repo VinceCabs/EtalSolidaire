@@ -263,5 +263,3 @@ function testRenderPaniers() {
   expect = "1 salade, 1 poireau, 1 pomme";
   console.log(result == expect);
 }
-
-main();
