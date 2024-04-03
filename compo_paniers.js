@@ -24,7 +24,7 @@ function renderFormulaire(template, param_values) {
       value = _renderPaniers(value, ", ");
     }
     // console.log(param + ": " + value + "| type: " + typeof (value))
-    formulaire = formulaire.replace("{{" + param + "}}", value);
+    formulaire = formulaire.replaceAll("{{" + param + "}}", value);
     if (value == "oui") {
       formulaire = _insertBloc(formulaire, param, true);
     } else {
@@ -53,7 +53,7 @@ function renderEmail(template, param_values) {
       value = _renderPaniers(value, "</li>\n                          <li>");
     }
     // console.log(param + ": " + value + "| type: " + typeof (value))
-    email = email.replace("{{" + param + "}}", value);
+    email = email.replaceAll("{{" + param + "}}", value);
   }
   return email;
 }
