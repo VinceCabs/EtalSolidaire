@@ -28,13 +28,24 @@ limitations under the License.
 const RECIPIENT_COL  = "Email";
 const EMAIL_SENT_COL = "Email Sent";
 
+/**
+ * Sends a test email to the email address entered by user using the first row of the active sheet.
+ * @param {string} subjectLine (optional) for the email draft message
+ * @param {Sheet} sheet to read data from
+ */
+function sendTestEmail(subjectLine, sheet=SpreadsheetApp.getActiveSheet()) {
+  testAdress = Browser.inputBox("Test address", 
+                                      "Enter test address:",
+                                      Browser.Buttons.OK_CANCEL);
+  sendEmails(subjectLine, sheet, true, testAdress);
+}
 
 /**
  * Sends emails from sheet data.
  * @param {string} subjectLine (optional) for the email draft message
  * @param {Sheet} sheet to read data from
 */
-function sendEmails(subjectLine, sheet=SpreadsheetApp.getActiveSheet()) {
+function sendEmails(subjectLine, sheet=SpreadsheetApp.getActiveSheet(), test=false, testAdress) {
   // option to skip browser prompt if you want to use this code in other projects
   if (!subjectLine){
     subjectLine = Browser.inputBox("Mail Merge", 
@@ -59,7 +70,7 @@ function sendEmails(subjectLine, sheet=SpreadsheetApp.getActiveSheet()) {
   const data = dataRange.getDisplayValues();
 
   // Assumes row 1 contains our column headings
-  const heads = data.shift(); 
+  const heads = data.shift();
   
   // Gets the index of the column named 'Email Status' (Assumes header names are unique)
   // @see http://ramblings.mcpher.com/Home/excelquirks/gooscript/arrayfunctions
@@ -68,22 +79,27 @@ function sendEmails(subjectLine, sheet=SpreadsheetApp.getActiveSheet()) {
   // Converts 2d array into an object array
   // See https://stackoverflow.com/a/22917499/1027723
   // For a pretty version, see https://mashe.hawksey.info/?p=17869/#comment-184945
-  const obj = data.map(r => (heads.reduce((o, k, i) => (o[k] = r[i] || '', o), {})));
+  let obj = data.map(r => (heads.reduce((o, k, i) => (o[k] = r[i] || '', o), {})));
 
   // Creates an array to record sent emails
   const out = [];
 
+  // if test is true, only keep the first row
+  if (test) {
+    obj = [obj[0]];
+  }
   // Loops through all the rows of data
   obj.forEach(function(row, rowIdx){
     // Only sends emails if email_sent cell is blank and not hidden by a filter
     if (row[EMAIL_SENT_COL] == ''){
       try {
+        const to = test ? testAdress : row[RECIPIENT_COL];
         const msgObj = fillInTemplateFromObject_(emailTemplate.message, row);
 
         // See https://developers.google.com/apps-script/reference/gmail/gmail-app#sendEmail(String,String,String,Object)
         // If you need to send emails with unicode/emoji characters change GmailApp for MailApp
         // Uncomment advanced parameters as needed (see docs for limitations)
-        GmailApp.sendEmail(row[RECIPIENT_COL], msgObj.subject, msgObj.text, {
+        GmailApp.sendEmail(to, msgObj.subject, msgObj.text, {
           htmlBody: msgObj.html,
           // bcc: 'a.bbc@email.com',
           // cc: 'a.cc@email.com',
@@ -104,10 +120,11 @@ function sendEmails(subjectLine, sheet=SpreadsheetApp.getActiveSheet()) {
       out.push([row[EMAIL_SENT_COL]]);
     }
   });
-  
+
   // Updates the sheet with new data
-  sheet.getRange(2, emailSentColIdx+1, out.length).setValues(out);
-  
+  if (!test) {
+    sheet.getRange(2, emailSentColIdx+1, out.length).setValues(out);
+  }
   /**
    * Get a Gmail draft message by matching the subject line.
    * @param {string} subject_line to search for draft message
@@ -200,3 +217,4 @@ function sendEmails(subjectLine, sheet=SpreadsheetApp.getActiveSheet()) {
       .replace(/[\t]/g, '\\t');
   };
 }
+  
