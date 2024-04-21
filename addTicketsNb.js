@@ -43,4 +43,5 @@ function addTicketsNb(sheet = SpreadsheetApp.getActiveSheet()) {
   // update tickets column in sheet
   r = sheet.getRange(2, ticketsColIdx + 1, ticketsColumn.length).setValues(ticketsColumn)
 
+  toast("Add tickets #", "Tickets numbers added");
 }

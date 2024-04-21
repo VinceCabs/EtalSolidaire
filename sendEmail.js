@@ -37,6 +37,7 @@ function sendTestEmail(subjectLine, sheet=SpreadsheetApp.getActiveSheet()) {
   testAdress = Browser.inputBox("Test address", 
                                       "Enter test address:",
                                       Browser.Buttons.OK_CANCEL);
+  toast("Send Test Email", "sending test email to " + testAdress + " ...");
   sendEmails(subjectLine, sheet, true, testAdress);
 }
 
@@ -83,7 +84,9 @@ function sendEmails(subjectLine, sheet=SpreadsheetApp.getActiveSheet(), test=fal
 
   // Creates an array to record sent emails
   const out = [];
+  let emailCount = 0;
 
+  toast("Send Emails", "sending emails ...");
   // if test is true, only keep the first row
   if (test) {
     obj = [obj[0]];
@@ -110,6 +113,7 @@ function sendEmails(subjectLine, sheet=SpreadsheetApp.getActiveSheet(), test=fal
           attachments: emailTemplate.attachments,
           inlineImages: emailTemplate.inlineImages
         });
+        emailCount++;
         // Edits cell to record email sent date
         out.push([new Date()]);
       } catch(e) {
@@ -125,12 +129,16 @@ function sendEmails(subjectLine, sheet=SpreadsheetApp.getActiveSheet(), test=fal
   if (!test) {
     sheet.getRange(2, emailSentColIdx+1, out.length).setValues(out);
   }
+
+  toast("Send Emails", emailCount + " email(s) sent");
+
   /**
    * Get a Gmail draft message by matching the subject line.
    * @param {string} subject_line to search for draft message
    * @return {object} containing the subject, plain and html message body and attachments
   */
   function getGmailTemplateFromDrafts_(subject_line){
+    toast("Send Emails", "getting email template from drafts...");
     try {
       // get drafts
       const drafts = GmailApp.getDrafts();
