@@ -139,13 +139,6 @@ function _insertBloc(template, block_name, insert) {
   return template;
 }
 
-function getRawText() {
-  let txt = SpreadsheetApp.getActiveSpreadsheet().getCurrentCell().getValue();
-  let ui = SpreadsheetApp.getUi();
-  let result = ui.alert(txt, ui.ButtonSet.OK);
-  console.log("pouet");
-}
-
 function main() {
   allTests();
 }
